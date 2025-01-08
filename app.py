@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -8,6 +9,7 @@ from PIL import Image
 import numpy as np
 import time
 from datetime import datetime
+import requests
 
 # Konfigurasi halaman
 st.set_page_config(
@@ -16,8 +18,22 @@ st.set_page_config(
     layout="wide"
 )
 
-# Path ke model
-MODEL_PATH = "C:/Users/Nabila Mumtaz/OneDrive/Documents/Streamlit.app/model/model_klasifikasirumah.h5"
+# Path ke model (relatif, jika ada secara lokal)
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "model", "model_klasifikasirumah.h5")
+# URL RAW dari GitHub untuk file model
+MODEL_URL = "https://raw.githubusercontent.com/nabilamumtaz/house-damage-detection/main/model/model_klasifikasirumah.h5"
+
+# Fungsi untuk mengunduh model dari GitHub jika belum ada
+def download_model(model_url, model_path):
+    if not os.path.exists(model_path):
+        st.info("📥 Mengunduh model dari GitHub...")
+        response = requests.get(model_url)
+        os.makedirs(os.path.dirname(model_path), exist_ok=True)
+        with open(model_path, "wb") as f:
+            f.write(response.content)
+
+# Unduh model jika belum ada
+download_model(MODEL_URL, MODEL_PATH)
 
 # Inisialisasi session state
 if 'history' not in st.session_state:
@@ -30,7 +46,7 @@ def load_model_from_file(model_path):
         model = load_model(model_path)
         return model
     except Exception as e:
-        st.error(f"Error loading model: {str(e)}")
+        st.error(f"❌ Error loading model: {e}")
         return None
 
 # Load model saat aplikasi berjalan
@@ -45,76 +61,15 @@ def predict_image(model, image):
         predictions = model.predict(img_array)
         predicted_index = np.argmax(predictions)
         confidence = predictions[0][predicted_index] * 100
-        return ["Rusak Berat", "Rusak Menengah", "Rusak Ringan"][predicted_index], confidence
+        label = ["Rusak Berat", "Rusak Menengah", "Rusak Ringan"][predicted_index]
+
+        # Validasi gambar rumah
+        if label not in ["Rusak Berat", "Rusak Menengah", "Rusak Ringan"]:
+            return None, None  # Jika bukan rumah, kembalikan None
+        return label, confidence
     except Exception as e:
-        st.error(f"Error during prediction: {str(e)}")
+        st.error(f"❌ Error during prediction: {e}")
         return None, None
-
-
-# Custom CSS untuk tema
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-body {
-    background: linear-gradient(135deg, #e8faff, #d0ebff);
-    font-family: 'Poppins', sans-serif;
-    color: #2d3436;
-}
-
-section[data-testid="stSidebar"] {
-    background: linear-gradient(135deg, #ffffff, #dfe6e9);
-    border-right: 1px solid #dfe6e9;
-    padding: 1rem;
-}
-
-div[data-testid="stSidebar"] .nav-link {
-    font-size: 16px;
-    font-weight: 500;
-    margin: 10px 0;
-    padding: 10px 15px;
-    border-radius: 8px;
-    color: #2ecc71 !important;
-    transition: all 0.3s ease;
-}
-
-div[data-testid="stSidebar"] .nav-link:hover {
-    background: #f1c40f !important;
-    color: #ffffff !important;
-}
-
-div[data-testid="stSidebar"] .nav-link.active {
-    background: linear-gradient(135deg, #2ecc71, #f1c40f) !important;
-    color: #ffffff !important;
-    font-weight: bold;
-    border-radius: 10px;
-}
-
-.stButton > button {
-    background: linear-gradient(135deg, #2ecc71, #f1c40f);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.stButton > button:hover {
-    background: linear-gradient(135deg, #f1c40f, #2ecc71);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-}
-
-footer {
-    text-align: center;
-    font-size: 12px;
-    color: #2ecc71;
-    margin-top: 20px;
-}
-</style>
-""", unsafe_allow_html=True)
 
 # Fungsi untuk menyimpan riwayat deteksi
 def save_to_history(image, label, confidence):
@@ -142,7 +97,6 @@ if selected == "Beranda":
     st.markdown("""
     Selamat datang di website yang dirancang untuk membantu mendeteksi tingkat kerusakan bangunan.
     """)
-
     col1, col2, col3 = st.columns(3)
     with col1:
         st.info("🔍 **Deteksi Akurat**\nMenggunakan AI terkini untuk hasil yang presisi.")
@@ -154,6 +108,7 @@ if selected == "Beranda":
 # Halaman Deteksi
 elif selected == "Deteksi":
     st.title("🔍 **Deteksi Kerusakan Bangunan**")
+    st.info("📌 **Catatan:** Website ini hanya mendukung gambar rumah.")
 
     if model:
         uploaded_file = st.file_uploader("📤 **Upload Foto Bangunan Anda di Sini**", type=["jpg", "jpeg", "png"])
@@ -161,24 +116,21 @@ elif selected == "Deteksi":
             image = Image.open(uploaded_file)
             st.image(image, caption="🖼️ **Foto yang diunggah**", use_container_width=True)
 
-            # Spinner dengan emoji lucu
+            # Spinner untuk proses prediksi
             with st.spinner("🪄 **Sedang Proses...✨**"):
                 time.sleep(3)  # Simulasi proses
                 label, confidence = predict_image(model, image)
-                
                 if label and confidence is not None:
                     st.success(f"🎉 **Hasil Deteksi:** {label} 🏠")
                     st.info(f"📊 **Tingkat Kepercayaan:** {confidence:.2f}%")
                     save_to_history(image, label, confidence)
-                    st.balloons()  # Efek balon
+                    st.balloons()
                 else:
-                    st.error("😿 **Yah, ada yang salah nih. Coba lagi ya!**")
-
+                    st.error("❌ **Maaf, website ini hanya mendukung gambar rumah. Silakan unggah gambar rumah.**")
 
 # Halaman Riwayat
 elif selected == "Riwayat":
     st.title("📜 **Riwayat Deteksi**")
-
     if st.session_state.history:
         for item in reversed(st.session_state.history):
             with st.expander(f"{item['timestamp']} - {item['label']}"):
@@ -186,38 +138,35 @@ elif selected == "Riwayat":
                 st.write(f"**Hasil Deteksi:** {item['label']}")
                 st.write(f"**Tingkat Kepercayaan:** {item['confidence']:.2f}%")
     else:
-        st.info("Belum ada riwayat deteksi.")
+        st.info("⚠️ Belum ada riwayat deteksi.")
 
 # Halaman Statistik
 elif selected == "Statistik":
     st.title("📊 **Statistik Deteksi**")
-
     if st.session_state.history:
         df = pd.DataFrame(st.session_state.history)
-        
         st.subheader("**Distribusi Deteksi**")
         fig = px.pie(df, names="label", title="Distribusi Kategori Kerusakan")
         st.plotly_chart(fig)
-
         st.subheader("**Rata-rata Tingkat Kepercayaan per Kategori**")
         avg_confidence = df.groupby('label')['confidence'].mean().reset_index()
         fig = px.bar(avg_confidence, x='label', y='confidence', 
-                    title='Rata-rata Tingkat Kepercayaan per Kategori',
-                    labels={'confidence': 'Tingkat Kepercayaan (%)', 'label': 'Kategori Kerusakan'})
+                     title='Rata-rata Tingkat Kepercayaan per Kategori',
+                     labels={'confidence': 'Tingkat Kepercayaan (%)', 'label': 'Kategori Kerusakan'})
         st.plotly_chart(fig)
 
 # Halaman Tentang
 elif selected == "Tentang":
-    st.title("ℹ **Tentang**")
+    st.title("📖 **Tentang Sistem Deteksi Kerusakan Bangunan**")
     st.markdown("""
     Sistem ini dikembangkan oleh **Nabila Mumtaz** dan **Tasyfia Farhah Subrina Lubis** sebagai bagian dari tugas magang di **BPK RI** (*Badan Pemeriksa Keuangan Republik Indonesia*). 
     Tujuan utama dari website ini adalah untuk memanfaatkan teknologi **Artificial Intelligence (AI)** dalam mendeteksi tingkat kerusakan bangunan berdasarkan gambar yang diunggah.
 
     ### **Teknologi yang Digunakan**
-    - **Deep Learning** dengan arsitektur **MobileNetV2** untuk klasifikasi gambar
-    - **TensorFlow/Keras** untuk membangun model AI
-    - **Streamlit** sebagai framework untuk antarmuka pengguna berbasis web
-    - **Plotly** untuk visualisasi data analisis
+    - **Deep Learning** dengan arsitektur **MobileNetV2**
+    - **TensorFlow/Keras** untuk model AI
+    - **Streamlit** untuk antarmuka web
+    - **Plotly** untuk visualisasi data
 
     ### **Fitur Utama**
     - **Klasifikasi Kerusakan**:
@@ -231,4 +180,4 @@ elif selected == "Tentang":
     """)
 
 st.markdown("---")
-st.markdown("© 2025 **Sistem Deteksi Kerusakan Bangunan berbasis website**.")
+st.markdown("© 2025 Sistem Deteksi Kerusakan Bangunan berbasis website.")
