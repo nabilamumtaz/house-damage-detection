@@ -1,10 +1,8 @@
----
-
 # 🏠 House Damage Detection System
 
 A web-based application designed to detect and classify house damage levels using AI technology. The system analyzes uploaded images and categorizes them into three distinct levels: **severe damage**, **moderate damage**, and **minor damage**. Built with **Streamlit**, this platform offers accurate damage classification to assist users in evaluating building conditions.
 
----
+***
 
 ## 📋 Features
 
@@ -20,7 +18,7 @@ A web-based application designed to detect and classify house damage levels usin
 - **Interactive Data Visualization**  
   View detection history and statistics with interactive charts.
 
----
+***
 
 ## 🛠 Technologies Used
 
@@ -29,7 +27,7 @@ A web-based application designed to detect and classify house damage levels usin
 - **Visualization Tools**: Interactive graphs powered by **Plotly**.  
 - **Backend Framework**: **TensorFlow/Keras** for AI model implementation.
 
----
+***
 
 ## 🚀 How to Use
 
@@ -45,7 +43,7 @@ A web-based application designed to detect and classify house damage levels usin
 3. **View Statistics**  
    Explore interactive charts to analyze detection results.
 
----
+***
 
 ## 🔧 Setup and Installation
 
@@ -69,7 +67,7 @@ A web-based application designed to detect and classify house damage levels usin
    streamlit run app.py
    ```
 
----
+***
 
 ## 📊 Future Improvements
 
@@ -77,7 +75,7 @@ A web-based application designed to detect and classify house damage levels usin
 - Add multilingual support for global accessibility.  
 - Integrate additional features like repair cost estimation.
 
----
+***
 
 ## 👩‍💻 Developers
 
@@ -88,5 +86,7 @@ This project was developed by:
 As part of an internship project at **BPK RI (Badan Pemeriksa Keuangan Republik Indonesia)**.
 
 ---
+
+Salin teks ini ke README Anda dan coba lagi. Format ini seharusnya tidak menyebabkan error. 😊
 
 
