@@ -87,6 +87,4 @@ As part of an internship project at **BPK RI (Badan Pemeriksa Keuangan Republik 
 
 ---
 
-Salin teks ini ke README Anda dan coba lagi. Format ini seharusnya tidak menyebabkan error. 😊
-
 
