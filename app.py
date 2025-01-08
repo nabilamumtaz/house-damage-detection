@@ -157,7 +157,7 @@ elif selected == "Statistik":
 
 # Halaman Tentang
 elif selected == "Tentang":
-    st.title("📖 **Tentang Sistem Deteksi Kerusakan Bangunan**")
+    st.title("📖 **Tentang**")
     st.markdown("""
     Sistem ini dikembangkan oleh **Nabila Mumtaz** dan **Tasyfia Farhah Subrina Lubis** sebagai bagian dari tugas magang di **BPK RI** (*Badan Pemeriksa Keuangan Republik Indonesia*). 
     Tujuan utama dari website ini adalah untuk memanfaatkan teknologi **Artificial Intelligence (AI)** dalam mendeteksi tingkat kerusakan bangunan berdasarkan gambar yang diunggah.
