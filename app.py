@@ -108,8 +108,7 @@ if selected == "Beranda":
 # Halaman Deteksi
 elif selected == "Deteksi":
     st.title("🔍 **Deteksi Kerusakan Bangunan**")
-    st.info("📌 **Catatan:** Website ini hanya mendukung gambar rumah.")
-
+    
     if model:
         uploaded_file = st.file_uploader("📤 **Upload Foto Bangunan Anda di Sini**", type=["jpg", "jpeg", "png"])
         if uploaded_file is not None:
