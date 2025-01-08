@@ -113,7 +113,7 @@ elif selected == "Deteksi":
         uploaded_file = st.file_uploader("📤 **Upload Foto Bangunan Anda di Sini**", type=["jpg", "jpeg", "png"])
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
-            st.image(image, caption="🖼️ **Foto yang diunggah**", use_container_width=True)
+            st.image(image, caption="🖼️ Foto yang diunggah", use_container_width=True)
 
             # Spinner untuk proses prediksi
             with st.spinner("🪄 **Sedang Proses...✨**"):
