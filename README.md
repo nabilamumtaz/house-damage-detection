@@ -2,89 +2,125 @@
 
 A web-based application designed to detect and classify house damage levels using AI technology. The system analyzes uploaded images and categorizes them into three distinct levels: **severe damage**, **moderate damage**, and **minor damage**. Built with **Streamlit**, this platform offers accurate damage classification to assist users in evaluating building conditions.
 
-***
+---
 
-## 📋 Features
+## 🗋 Features
 
 - **Accurate Damage Classification**  
-  Utilizes AI to classify house damages into:  
+  Classifies house damages into:  
   - **Severe Damage**: Total structural failure.  
-  - **Moderate Damage**: Significant damage requiring major repairs.  
+  - **Moderate Damage**: Significant repairs needed.  
   - **Minor Damage**: Small cracks or cosmetic issues.  
 
 - **User-Friendly Interface**  
-  Upload images and receive results quickly and easily.
+  Upload images and receive results easily.
 
 - **Interactive Data Visualization**  
-  View detection history and statistics with interactive charts.
+  View detection history and statistics.
 
-***
+- **Database Integration**  
+  Stores user accounts and detection results in a **MySQL database**.
 
-## 🛠 Technologies Used
+- **API Integration**  
+  Accessible API endpoints, testable via **Postman**.
 
-- **Deep Learning Framework**: Built with **MobileNetV2** architecture for image classification.  
-- **Frontend Framework**: Developed using **Streamlit** for an intuitive user experience.  
-- **Visualization Tools**: Interactive graphs powered by **Plotly**.  
-- **Backend Framework**: **TensorFlow/Keras** for AI model implementation.
+---
 
-***
+## 🔧 Technologies Used
+
+- **MobileNetV2**: AI model architecture.
+- **Streamlit**: Frontend framework.
+- **Plotly**: Interactive charts.
+- **TensorFlow/Keras**: Deep learning backend.
+- **MySQL**: Database management.
+- **Flask**: RESTful API framework.
+
+---
 
 ## 🚀 How to Use
 
-1. **Upload an Image**  
-   Upload a picture of a house through the web interface.
+### Web Interface
+1. **Upload an Image**: Upload a house image.
+2. **Get Results**: Receive a damage classification.
+3. **View Statistics**: Explore interactive charts.
+4. **Manage Account**: Register, login, and access your history.
 
-2. **Get the Results**  
-   The system will classify the image into one of the three categories:  
-   - **Severe Damage**  
-   - **Moderate Damage**  
-   - **Minor Damage**
+### API Endpoints (Tested with Postman)
 
-3. **View Statistics**  
-   Explore interactive charts to analyze detection results.
+- **`GET /`**: Returns a welcome message.
+- **`POST /register`**: Registers a new user.
+  ```json
+  {
+    "email": "example@gmail.com",
+    "password": "yourpassword"
+  }
+  ```
+- **`POST /login`**: Authenticates a user.
+- **`POST /predict`**: Upload an image for damage classification.
+  ```json
+  {
+    "label": "Severe Damage",
+    "confidence": 92.15
+  }
+  ```
+- **`GET /history`**: Fetches detection history for a user.
+- **`GET /stats`**: Provides detection statistics.
 
-***
+---
 
 ## 🔧 Setup and Installation
 
-1. Clone this repository:  
+1. Clone the repository:  
    ```bash
    git clone https://github.com/nabilamumtaz/house-damage-detection.git
    ```
 
-2. Navigate to the project directory:  
-   ```bash
-   cd house-damage-detection
-   ```
-
-3. Install dependencies:  
+2. Install dependencies:  
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Run the Streamlit app:  
+3. Import the database structure:
+   - The **MySQL database** consists of two tables:
+     - **`users`**: Contains user account details.
+       - **Columns**:
+         - `id`: Unique identifier for each user (Primary Key).
+         - `email`: User's email address (must be unique).
+         - `password`: Hashed password for secure authentication.
+     - **`detections`**: Stores detection history.
+       - **Columns**:
+         - `id`: Unique identifier for each detection record (Primary Key).
+         - `email`: Email of the user associated with the detection.
+         - `label`: Classification result (`Severe Damage`, `Moderate Damage`, or `Minor Damage`).
+         - `confidence`: AI model's confidence percentage in the classification.
+         - `timestamp`: Date and time when the detection was made.
+
+4. Start the API:
+   ```bash
+   python flask_api.py
+   ```
+
+5. Run the Streamlit app:
    ```bash
    streamlit run app.py
    ```
 
-***
+---
 
 ## 📊 Future Improvements
 
-- Enhance the model's accuracy with more diverse datasets.  
-- Add multilingual support for global accessibility.  
-- Integrate additional features like repair cost estimation.
-
-***
-
-## 👩‍💻 Developers
-
-This project was developed by:  
-- **Nabila Mumtaz**  
-- **Tasyfia Farhah Subrina Lubis**  
-
-As part of an internship project at **BPK RI (Badan Pemeriksa Keuangan Republik Indonesia)**.
+- Enhance model accuracy.
+- Add multilingual support.
+- Integrate repair cost estimation.
+- Improve API response time.
 
 ---
 
+## 👩‍💻 Developers
+
+Developed by:  
+- **Nabila Mumtaz**  
+- **Tasyfia Farhah Subrina Lubis**  
+
+Part of an internship project at **BPK RI**.
 
