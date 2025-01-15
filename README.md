@@ -97,7 +97,7 @@ A web-based application designed to detect and classify house damage levels usin
 
 4. Start the API:
    ```bash
-   python flask_api.py
+   python app.py
    ```
 
 5. Run the Streamlit app:
