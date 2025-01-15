@@ -102,7 +102,7 @@ A web-based application designed to detect and classify house damage levels usin
 
 5. Run the Streamlit app:
    ```bash
-   streamlit run app.py
+   streamlit run main.py
    ```
 
 ---
