@@ -26,6 +26,13 @@ DB_CONFIG = {
 # Path ke model TensorFlow
 MODEL_PATH = os.path.join(os.getcwd(), "model", "model_klasifikasirumah.h5")
 
+# Direktori sementara untuk menyimpan file gambar
+TEMP_DIR = os.path.join(os.getcwd(), "temp")
+os.makedirs(TEMP_DIR, exist_ok=True)
+
+# Label kategori kerusakan
+LABELS = ["Rusak Berat", "Rusak Menengah", "Rusak Ringan"]
+
 # Load model TensorFlow
 try:
     model = load_model(MODEL_PATH)
@@ -33,13 +40,6 @@ try:
 except Exception as e:
     logging.error(f"Error saat memuat model: {e}")
     model = None
-
-# Label kategori kerusakan
-LABELS = ["Rusak Berat", "Rusak Menengah", "Rusak Ringan"]
-
-# Direktori sementara untuk file yang diunggah
-TEMP_DIR = os.path.join(os.getcwd(), "temp")
-os.makedirs(TEMP_DIR, exist_ok=True)
 
 # Fungsi koneksi database
 def get_connection():
@@ -78,8 +78,7 @@ def home():
             "/register": "POST - Registrasi pengguna baru",
             "/login": "POST - Login pengguna",
             "/predict": "POST - Prediksi kerusakan berdasarkan gambar",
-            "/history": "GET - Lihat riwayat deteksi pengguna",
-            "/stats": "GET - Statistik deteksi kerusakan"
+            "/history": "GET - Lihat riwayat deteksi pengguna"
         }
     })
 
@@ -155,27 +154,46 @@ def predict():
     if not file.content_type.startswith('image/'):
         return jsonify({"error": "File bukan gambar"}), 400
 
-    file_path = os.path.join(TEMP_DIR, file.filename)
+    # Generate unique file name
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    unique_id = sha256(f"{email}{timestamp}".encode()).hexdigest()[:8]
+    image_name = f"img_{unique_id}.png"
+
+    # Simpan file gambar sementara
+    file_path = os.path.join(TEMP_DIR, image_name)
     try:
         file.save(file_path)
         logging.info(f"File berhasil disimpan di {file_path}")
+
+        # Prediksi kerusakan menggunakan model
         label, confidence = predict_image(file_path)
         if label is None:
             raise Exception("Gagal memproses gambar")
 
+        # Baca data gambar sebagai blob
+        with open(file_path, "rb") as img_file:
+            image_data = img_file.read()
+
+        # Simpan hasil prediksi ke database
         conn = get_connection()
         if conn:
             cursor = conn.cursor()
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            cursor.execute("INSERT INTO detections (email, label, confidence, timestamp) VALUES (%s, %s, %s, %s)",
-                           (email, label, confidence, timestamp))
+            cursor.execute(
+                """
+                INSERT INTO detections (email, label, confidence, timestamp, image_name, image_data)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (email, label, confidence, timestamp, image_name, image_data)
+            )
             conn.commit()
             cursor.close()
             conn.close()
 
         return jsonify({
             "label": label,
-            "confidence": round(confidence, 2)
+            "confidence": round(confidence, 2),
+            "image_name": image_name
         }), 200
     except Exception as e:
         logging.error(f"Error: {e}")
@@ -195,25 +213,9 @@ def get_history():
     if conn:
         cursor = conn.cursor(dictionary=True)
         try:
-            cursor.execute("SELECT * FROM detections WHERE email = %s ORDER BY timestamp DESC", (email,))
+            cursor.execute("SELECT id, label, confidence, timestamp, image_name FROM detections WHERE email = %s ORDER BY timestamp DESC", (email,))
             results = cursor.fetchall()
             return jsonify(results), 200
-        finally:
-            cursor.close()
-            conn.close()
-    else:
-        return jsonify({"error": "Koneksi database gagal"}), 500
-
-# Endpoint: Statistik deteksi
-@app.route('/stats', methods=['GET'])
-def get_stats():
-    conn = get_connection()
-    if conn:
-        cursor = conn.cursor(dictionary=True)
-        try:
-            cursor.execute("SELECT label, COUNT(*) AS count FROM detections GROUP BY label")
-            stats = cursor.fetchall()
-            return jsonify(stats), 200
         finally:
             cursor.close()
             conn.close()
