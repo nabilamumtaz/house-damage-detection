@@ -4,7 +4,7 @@ A web-based application designed to detect and classify house damage levels usin
 
 ---
 
-## 🗋 Features
+## 🼋 Features
 
 - **Accurate Damage Classification**  
   Classifies house damages into:  
@@ -64,8 +64,7 @@ A web-based application designed to detect and classify house damage levels usin
   }
   ```
 - **`GET /history`**: Fetches detection history for a user.
-- **`GET /stats`**: Provides detection statistics.
-
+- 
 ---
 
 ## 🔧 Setup and Installation
@@ -80,20 +79,11 @@ A web-based application designed to detect and classify house damage levels usin
    pip install -r requirements.txt
    ```
 
-3. Import the database structure:
-   - The **MySQL database** consists of two tables:
-     - **`users`**: Contains user account details.
-       - **Columns**:
-         - `id`: Unique identifier for each user (Primary Key).
-         - `email`: User's email address (must be unique).
-         - `password`: Hashed password for secure authentication.
-     - **`detections`**: Stores detection history.
-       - **Columns**:
-         - `id`: Unique identifier for each detection record (Primary Key).
-         - `email`: Email of the user associated with the detection.
-         - `label`: Classification result (`Severe Damage`, `Moderate Damage`, or `Minor Damage`).
-         - `confidence`: AI model's confidence percentage in the classification.
-         - `timestamp`: Date and time when the detection was made.
+3. Configure the database:
+   - Create a MySQL database named `user_management`.
+   - Import the database structure:
+     - **Table `users`**: Stores user account details.
+     - **Table `detections`**: Logs detection history.
 
 4. Start the API:
    ```bash
@@ -107,7 +97,7 @@ A web-based application designed to detect and classify house damage levels usin
 
 ---
 
-## 📊 Future Improvements
+## 🔁 Future Improvements
 
 - Enhance model accuracy.
 - Add multilingual support.
@@ -123,4 +113,3 @@ Developed by:
 - **Tasyfia Farhah Subrina Lubis**  
 
 Part of an internship project at **BPK RI**.
-
