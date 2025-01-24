@@ -4,7 +4,7 @@ A web-based application designed to detect and classify house damage levels usin
 
 ---
 
-## 🼋 Features
+## 💡 Features
 
 - **Accurate Damage Classification**  
   Classifies house damages into:  
@@ -59,9 +59,9 @@ A web-based application designed to detect and classify house damage levels usin
 - **`POST /predict`**: Upload an image for damage classification.
   ```json
   {
-    "confidence": 92.15
+    "confidence": 92.15,
     "image_name": "img_1",
-   "label": "Severe Damage"
+    "label": "Severe Damage"
   }
   ```
 - **`GET /history`**: Fetches detection history for a user.
