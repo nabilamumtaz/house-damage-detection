@@ -59,8 +59,9 @@ A web-based application designed to detect and classify house damage levels usin
 - **`POST /predict`**: Upload an image for damage classification.
   ```json
   {
-    "label": "Severe Damage",
     "confidence": 92.15
+    "image_name": "img_1",
+   "label": "Severe Damage"
   }
   ```
 - **`GET /history`**: Fetches detection history for a user.
